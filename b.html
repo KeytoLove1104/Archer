@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TP-Link Router Manager 2025 (Mobile Ready)</title>
+    <title>TP-Link Router Manager 2025 (Search Added)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         /* ==================== 1. 全局变量与基础样式 ==================== */
@@ -12,7 +12,7 @@
             --primary-color: #007AFF;
             --bg-body: #F2F5F9;
             --sidebar-bg: #FFFFFF;
-            --glass-bg: rgba(255, 255, 255, 0.85); /* 增加一点不透明度以适配移动端重叠 */
+            --glass-bg: rgba(255, 255, 255, 0.95); /* 稍微增加不透明度以突出搜索框 */
             --glass-border: 1px solid rgba(255, 255, 255, 0.5);
             --text-main: #1D1D1F;
             --text-sub: #86868B;
@@ -41,7 +41,7 @@
             overflow: hidden;
         }
 
-        /* ==================== 2. 顶部栏 (Glassmorphism) ==================== */
+        /* ==================== 2. 顶部栏 (Header) ==================== */
         .header {
             height: 64px;
             background: var(--glass-bg);
@@ -50,8 +50,8 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 0 20px; /* 移动端调整 padding */
+            justify-content: space-between; /* 关键：让左中右分布 */
+            padding: 0 20px;
             z-index: 100;
             flex-shrink: 0;
             position: relative;
@@ -61,9 +61,59 @@
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-shrink: 0; /* 防止 Logo 被压缩 */
         }
 
-        /* 移动端菜单按钮 (默认隐藏) */
+        /* ========== 新增：搜索框样式 ========== */
+        .header-search {
+            flex: 1; /* 占据中间剩余空间 */
+            display: flex;
+            justify-content: center;
+            margin: 0 20px;
+            max-width: 400px; /* 限制最大宽度 */
+            position: relative;
+        }
+
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon-input {
+            position: absolute;
+            left: 12px;
+            color: var(--text-sub);
+            font-size: 14px;
+            pointer-events: none; /* 让点击穿透到 input */
+        }
+
+        .search-input {
+            width: 100%;
+            height: 38px;
+            background-color: #F0F2F5; /* 浅灰色背景 */
+            border: 1px solid transparent;
+            border-radius: 19px; /* 圆角药丸形状 */
+            padding: 0 15px 0 36px; /* 左侧留出图标位置 */
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .search-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        /* 搜索框聚焦状态 (Input Focus State) */
+        .search-input:focus {
+            background-color: #FFFFFF;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        /* 移动端菜单按钮 */
         .menu-toggle {
             display: none;
             font-size: 20px;
@@ -87,6 +137,7 @@
         .header-icons {
             display: flex;
             gap: 15px;
+            flex-shrink: 0;
         }
         .icon-btn {
             width: 36px;
@@ -344,6 +395,20 @@
             .config-view {
                 padding: 20px; /* 配置卡片减小内边距 */
             }
+            
+            /* 移动端搜索框适配：变窄 */
+            .header-search {
+                margin: 0 10px;
+                max-width: 200px;
+            }
+            .search-input {
+                font-size: 13px;
+                padding-left: 32px;
+            }
+            /* 屏幕很窄时隐藏 Placeholder 文字 */
+            .search-input::placeholder {
+                color: transparent;
+            }
 
             /* 连接线在单列模式下可能看起来有点怪，简单隐藏掉顶部横线 */
             .clients-grid {
@@ -365,6 +430,10 @@
                 margin-left: 0;
                 margin-right: 0;
             }
+            /* 极小屏幕隐藏搜索框，优先展示logo和图标 */
+            .header-search {
+                display: none;
+            }
         }
 
     </style>
@@ -380,6 +449,14 @@
             </div>
             <div class="logo">TP-Link</div>
         </div>
+
+        <div class="header-search">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon-input"></i>
+                <input type="text" class="search-input" placeholder="Search settings...">
+            </div>
+        </div>
+
         <div class="header-icons">
             <div class="icon-btn" title="Language Settings"><i class="fas fa-globe"></i></div>
             <div class="icon-btn" title="Accessibility Settings"><i class="fas fa-universal-access"></i></div>
