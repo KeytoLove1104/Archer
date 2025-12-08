@@ -38,7 +38,7 @@
             padding: 40px 30px;
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            text-decoration: none; /* 去掉链接下划线 */
+            text-decoration: none;
             color: #333;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
@@ -82,6 +82,10 @@
             line-height: 1.6;
             margin-bottom: 25px;
             height: 60px; /* 固定高度保持对齐 */
+            /* 让短文案垂直居中，视觉更好看 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; 
         }
 
         .btn {
@@ -121,21 +125,18 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            
-            /* 样式微调：小巧、不挡视线 */
-            background: rgba(0, 0, 0, 0.6); /* 半透明黑色 */
+            background: rgba(0, 0, 0, 0.6);
             color: white;
             padding: 6px 12px;
             border-radius: 4px;
             font-size: 12px;
-            font-family: monospace; /* 代码风格字体 */
+            font-family: monospace;
             text-transform: uppercase;
             border: 1px solid rgba(255,255,255,0.2);
             cursor: pointer;
-            z-index: 1000; /* 保证在 iframe 之上 */
-            backdrop-filter: blur(4px); /* 磨砂效果 */
+            z-index: 1000;
+            backdrop-filter: blur(4px);
             transition: all 0.2s;
-            
             display: flex;
             align-items: center;
             gap: 5px;
@@ -146,7 +147,7 @@
             transform: scale(1.05);
         }
         
-        /* 手机端适配：如果屏幕很小，卡片上下排列 */
+        /* 手机端适配 */
         @media (max-width: 768px) {
             .cards-container { flex-direction: column; }
             .card { width: 100%; max-width: 320px; }
@@ -160,16 +161,22 @@
         
         <div class="cards-container">
             <a href="a.html" class="card" onclick="openScheme(event, 'a.html')">
-                <div class="icon-circle"><i class="fas fa-desktop"></i></div>
+                <div class="icon-circle"><i class="fas fa-sitemap"></i></div>
                 <h2>Scheme A</h2>
-                <p><strong>经典层级结构</strong><br>适合桌面端操作，层级清晰，符合传统路由管理习惯。</p>
+                <p>
+                    <strong>T型结构</strong><br>
+                    信息层级清晰
+                </p>
                 <span class="btn">点击体验 A 方案</span>
             </a>
 
             <a href="b.html" class="card" onclick="openScheme(event, 'b.html')">
-                <div class="icon-circle"><i class="fas fa-mobile-alt"></i></div>
+                <div class="icon-circle"><i class="fas fa-table-columns"></i></div>
                 <h2>Scheme B</h2>
-                <p><strong>移动端优先 / 磨砂质感</strong><br>现代化设计风格，自适应布局，适合手机和触屏设备。</p>
+                <p>
+                    <strong>单侧边栏</strong><br>
+                    简洁统一，视觉聚焦
+                </p>
                 <span class="btn">点击体验 B 方案</span>
             </a>
         </div>
@@ -177,37 +184,24 @@
 
     <div id="preview-overlay">
         <iframe id="content-frame" src=""></iframe>
-        
         <button id="back-btn" onclick="closeScheme()">
             <i class="fas fa-undo"></i> back
         </button>
     </div>
 
     <script>
-        // 打开方案
         function openScheme(event, url) {
-            event.preventDefault(); // 阻止 a 标签的默认跳转行为
-            
+            event.preventDefault();
             const overlay = document.getElementById('preview-overlay');
             const iframe = document.getElementById('content-frame');
-            
-            // 设置 iframe 地址
             iframe.src = url;
-            
-            // 显示遮罩层
             overlay.style.display = 'flex';
         }
 
-        // 关闭方案 (返回)
         function closeScheme() {
             const overlay = document.getElementById('preview-overlay');
             const iframe = document.getElementById('content-frame');
-            
-            // 隐藏遮罩层
             overlay.style.display = 'none';
-            
-            // 清空 iframe src，防止后台播放音频或占用资源
-            // 稍微延迟一下清空，避免闪屏
             setTimeout(() => {
                 iframe.src = ''; 
             }, 300);
