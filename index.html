@@ -3,49 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>方案对比演示 | Design Review</title>
+    <title>路由器管理界面 - 方案评估</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* --- 全局样式 --- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f0f2f5;
-            height: 100vh;
-            overflow: hidden; /* 防止出现双滚动条 */
-        }
+        /* --- 全局重置 --- */
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f4f6f9; }
 
-        /* --- 1. 选择页 (Landing Page) 样式 --- */
-        #landing-page {
+        /* --- 1. 选择页面的样式 (Selection Screen) --- */
+        #selection-screen {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100%;
-            gap: 40px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            transition: opacity 0.3s ease;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
+        h1 { color: #333; margin-bottom: 40px; font-weight: 300; letter-spacing: 1px; }
+
+        .cards-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 卡片样式 */
         .card {
             background: white;
             width: 300px;
             padding: 40px 30px;
-            border-radius: 20px;
-            text-align: center;
-            text-decoration: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-decoration: none; /* 去掉链接下划线 */
             color: #333;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.5);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border-color: #e0e0e0;
         }
 
+        /* 图标样式 */
         .icon-circle {
             width: 80px;
             height: 80px;
@@ -55,125 +64,153 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
             font-size: 32px;
+            margin-bottom: 20px;
         }
-
-        /* 针对方案B的图标颜色区分 */
+        
+        /* 针对B方案换个颜色 */
         .card:last-child .icon-circle {
-            background: #fff0f6;
-            color: #eb2f96;
+            background: #f6ffed;
+            color: #52c41a;
         }
 
-        .card h2 { margin: 10px 0; font-size: 24px; }
-        .card p { color: #666; font-size: 14px; line-height: 1.6; margin-bottom: 30px; height: 60px;}
+        .card h2 { margin: 10px 0; font-size: 22px; }
+        
+        .card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            height: 60px; /* 固定高度保持对齐 */
+        }
 
         .btn {
             display: inline-block;
-            padding: 10px 30px;
-            border-radius: 50px;
+            padding: 10px 24px;
             background: #333;
             color: white;
-            font-weight: bold;
-            transition: background 0.2s;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: 0.2s;
         }
 
         .card:hover .btn { background: #1890ff; }
-        .card:last-child:hover .btn { background: #eb2f96; }
+        .card:last-child:hover .btn { background: #52c41a; }
 
-
-        /* --- 2. 预览容器 (Preview Container) 样式 --- */
-        #preview-wrapper {
+        /* --- 2. 预览容器样式 (Preview Overlay) --- */
+        #preview-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: white;
+            z-index: 999;
             display: none; /* 默认隐藏 */
-            z-index: 100;
+            flex-direction: column;
         }
 
-        /* 核心：全屏 Iframe */
+        /* iframe 占满屏幕 */
         iframe {
+            flex: 1;
             width: 100%;
             height: 100%;
             border: none;
         }
 
-        /* --- 3. 悬浮返回按钮样式 --- */
+        /* --- 3. Back 按钮样式 --- */
         #back-btn {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.6);
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            
+            /* 样式微调：小巧、不挡视线 */
+            background: rgba(0, 0, 0, 0.6); /* 半透明黑色 */
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: monospace; /* 代码风格字体 */
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.2);
             cursor: pointer;
-            backdrop-filter: blur(5px);
-            font-size: 14px;
+            z-index: 1000; /* 保证在 iframe 之上 */
+            backdrop-filter: blur(4px); /* 磨砂效果 */
+            transition: all 0.2s;
+            
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            gap: 5px;
         }
 
         #back-btn:hover {
             background: rgba(0, 0, 0, 0.8);
             transform: scale(1.05);
-            padding-right: 25px; /* 动效 */
         }
-
+        
+        /* 手机端适配：如果屏幕很小，卡片上下排列 */
+        @media (max-width: 768px) {
+            .cards-container { flex-direction: column; }
+            .card { width: 100%; max-width: 320px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="landing-page">
-        <div class="card" onclick="openScheme('a.html')">
-            <div class="icon-circle"><i class="fas fa-desktop"></i></div>
-            <h2>Scheme A</h2>
-            <p><strong>经典层级结构</strong><br>适合桌面端操作，层级清晰，符合传统路由管理习惯。</p>
-            <span class="btn">点击体验 A 方案</span>
-        </div>
+    <div id="selection-screen">
+        <h1>Router UI / UX Design Test</h1>
+        
+        <div class="cards-container">
+            <a href="a.html" class="card" onclick="openScheme(event, 'a.html')">
+                <div class="icon-circle"><i class="fas fa-desktop"></i></div>
+                <h2>Scheme A</h2>
+                <p><strong>经典层级结构</strong><br>适合桌面端操作，层级清晰，符合传统路由管理习惯。</p>
+                <span class="btn">点击体验 A 方案</span>
+            </a>
 
-        <div class="card" onclick="openScheme('b.html')">
-            <div class="icon-circle"><i class="fas fa-mobile-alt"></i></div>
-            <h2>Scheme B</h2>
-            <p><strong>移动端优先 / 磨砂质感</strong><br>现代化设计风格，自适应布局，适合手机和触屏设备。</p>
-            <span class="btn">点击体验 B 方案</span>
+            <a href="b.html" class="card" onclick="openScheme(event, 'b.html')">
+                <div class="icon-circle"><i class="fas fa-mobile-alt"></i></div>
+                <h2>Scheme B</h2>
+                <p><strong>移动端优先 / 磨砂质感</strong><br>现代化设计风格，自适应布局，适合手机和触屏设备。</p>
+                <span class="btn">点击体验 B 方案</span>
+            </a>
         </div>
     </div>
 
-    <div id="preview-wrapper">
-        <button id="back-btn" onclick="closeScheme()">
-            <i class="fas fa-arrow-left"></i> 返回选择界面
-        </button>
+    <div id="preview-overlay">
+        <iframe id="content-frame" src=""></iframe>
         
-        <iframe id="main-frame" src=""></iframe>
+        <button id="back-btn" onclick="closeScheme()">
+            <i class="fas fa-undo"></i> back
+        </button>
     </div>
 
     <script>
-        const landingPage = document.getElementById('landing-page');
-        const previewWrapper = document.getElementById('preview-wrapper');
-        const mainFrame = document.getElementById('main-frame');
-
         // 打开方案
-        function openScheme(url) {
-            // 1. 设置 iframe 地址
-            mainFrame.src = url;
-            // 2. 隐藏选择页，显示预览页
-            landingPage.style.display = 'none';
-            previewWrapper.style.display = 'block';
+        function openScheme(event, url) {
+            event.preventDefault(); // 阻止 a 标签的默认跳转行为
+            
+            const overlay = document.getElementById('preview-overlay');
+            const iframe = document.getElementById('content-frame');
+            
+            // 设置 iframe 地址
+            iframe.src = url;
+            
+            // 显示遮罩层
+            overlay.style.display = 'flex';
         }
 
-        // 关闭方案（返回）
+        // 关闭方案 (返回)
         function closeScheme() {
-            // 1. 隐藏预览页，显示选择页
-            previewWrapper.style.display = 'none';
-            landingPage.style.display = 'flex';
-            // 2. 清空 iframe (防止如果是视频/音频还在后台播放)
-            mainFrame.src = '';
+            const overlay = document.getElementById('preview-overlay');
+            const iframe = document.getElementById('content-frame');
+            
+            // 隐藏遮罩层
+            overlay.style.display = 'none';
+            
+            // 清空 iframe src，防止后台播放音频或占用资源
+            // 稍微延迟一下清空，避免闪屏
+            setTimeout(() => {
+                iframe.src = ''; 
+            }, 300);
         }
     </script>
 </body>
