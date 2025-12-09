@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TP-Link Demo: Updated Hierarchy</title>
+    <title>TP-Link Demo: Mobile Optimized</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         /* ==================== 1. 全局变量与基础样式 ==================== */
@@ -51,6 +51,7 @@
             border-bottom: 1px solid rgba(0,0,0,0.05);
             z-index: 100;
             flex-shrink: 0;
+            position: relative; /* 确保子元素定位准确 */
         }
 
         .logo {
@@ -77,14 +78,14 @@
         .l1-nav-bar {
             display: flex;
             gap: 5px;
-            margin-left: 20px;
-            flex: 1;
+            margin-left: 10px;
+            flex: 1; /* 占据所有剩余空间 */
             overflow-x: auto; /* 允许横向滚动 */
-            scrollbar-width: none; /* Firefox 隐藏滚动条 */
-            -ms-overflow-style: none; /* IE/Edge 隐藏滚动条 */
-            margin-right: 20px; /* 增加右侧间距，防止贴着搜索框 */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-right: 10px; /* 防止内容贴边 */
         }
-        .l1-nav-bar::-webkit-scrollbar { display: none; /* Chrome 隐藏滚动条 */ }
+        .l1-nav-bar::-webkit-scrollbar { display: none; }
 
         .nav-l1-top {
             padding: 6px 12px;
@@ -108,12 +109,13 @@
         .icon-top-orange { color: var(--icon-orange); }
         .icon-top-red { color: var(--icon-red); }
 
-        /* ========== NEW: 搜索框样式 ========== */
+        /* ========== 搜索框样式 ========== */
         .search-box-wrapper {
             position: relative;
             display: flex;
             align-items: center;
             margin-right: 15px;
+            flex-shrink: 0; /* 防止被挤压 */
         }
 
         .search-input {
@@ -122,23 +124,18 @@
             padding: 0 15px 0 36px; /* 左边留出图标位置 */
             border-radius: 18px;
             border: none;
-            background-color: #F0F2F5; /* 浅灰色背景，与白色header形成对比 */
+            background-color: #F0F2F5;
             color: var(--text-main);
             font-size: 14px;
             outline: none;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
-        /* 搜索输入框 Placeholder 颜色 */
-        .search-input::placeholder {
-            color: #999;
-        }
-
-        /* 聚焦状态 */
+        .search-input::placeholder { color: #999; }
         .search-input:focus {
             background-color: #fff;
-            width: 260px; /* 聚焦时稍微变宽 */
-            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2); /* 蓝色微光 */
+            width: 260px;
+            box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.2);
         }
 
         .search-icon-inside {
@@ -147,6 +144,7 @@
             font-size: 14px;
             color: #999;
             pointer-events: none; /* 让点击穿透到 input */
+            transition: color 0.3s;
         }
 
         /* ==================== 3. 主容器与动态侧边栏 ==================== */
@@ -163,7 +161,6 @@
             z-index: 90;
         }
         
-        /* 桌面端隐藏逻辑 */
         .sidebar-hidden {
             width: 0;
             padding: 0;
@@ -206,7 +203,6 @@
         }
 
         .content-wrapper { width: 100%; max-width: 1100px; }
-        
         .page-header-text { text-align: center; margin-bottom: 40px; }
         .page-title { font-size: 28px; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
         .page-desc { color: var(--text-sub); margin: 0; font-size: 14px; }
@@ -232,12 +228,10 @@
             height: 62px; background: #E5E5EA; z-index: 1; 
         }
 
-        /* 客户端网格 */
         .clients-grid { 
             display: flex; justify-content: center; flex-wrap: wrap; gap: 30px; 
             width: 100%; position: relative; 
         }
-        /* 连接横线 (桌面端) */
         .clients-grid::before { 
             content: ''; position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
             width: 80%; max-width: 600px; height: 2px; background: #E5E5EA; z-index: 1; 
@@ -269,70 +263,101 @@
         input:checked + .slider { background-color: var(--primary-color); }
         input:checked + .slider:before { transform: translateX(22px); }
 
-        /* ==================== 📱 Mobile Responsive Styles ==================== */
+        /* ==================== 📱 Mobile Responsive Styles (关键修正) ==================== */
         @media (max-width: 768px) {
             /* 1. 顶部栏适配 */
             .header { padding: 0 15px; height: 56px; }
-            .l1-nav-bar { margin-left: 10px; gap: 0; margin-right: 10px; }
-            .nav-l1-top { padding: 5px 10px; font-size: 14px; }
-            /* 隐藏顶部导航的图标以节省空间 (可选) */
-            /* .nav-l1-top i { display: none; } */
-            
-            /* 手机端搜索框适配：变窄 */
-            .search-input { width: 120px; height: 32px; font-size: 13px; }
-            .search-input:focus { width: 160px; position: absolute; right: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-            .search-box-wrapper { margin-right: 10px; }
-
-            /* 2. 侧边栏适配 (Overlay 模式) */
-            .sidebar-wrapper {
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
-                /* 默认移出屏幕 */
-                transform: translateX(-100%);
-                width: 260px;
+            .l1-nav-bar { 
+                margin-left: 5px; 
+                margin-right: 5px; 
+                /* 确保操作栏有足够空间 */
+                flex-grow: 1;
+                flex-shrink: 1;
             }
-            /* 手机端 "隐藏" 其实是移出屏幕，而不是 width:0 */
+            .nav-l1-top { padding: 5px 8px; font-size: 14px; }
+            
+            /* Logo 在小屏下微调，防止占位过大 */
+            .logo { font-size: 18px; margin-right: 8px; }
+
+            /* 2. 搜索功能优化：默认只显示图标，不占空间，点击后悬浮展开 */
+            .search-box-wrapper {
+                width: 32px; /* 默认只占一个图标宽度 */
+                height: 32px;
+                margin-right: 5px;
+                justify-content: center;
+                background: transparent; /* 去掉背景 */
+            }
+
+            /* 输入框平时隐藏(透明且不可见)，但占据位置以便点击触发focus */
+            .search-input { 
+                width: 32px; 
+                height: 32px; 
+                padding: 0; 
+                background: transparent; 
+                color: transparent;
+                cursor: pointer;
+            }
+            .search-input::placeholder { color: transparent; }
+            
+            /* 搜索图标居中显示 */
+            .search-icon-inside {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                color: var(--primary-color); /* 蓝色图标更显眼 */
+                font-size: 16px;
+                z-index: 1;
+            }
+
+            /* 🌟 核心交互：输入框获得焦点时展开，覆盖顶部栏，不挤压操作栏 */
+            .search-input:focus {
+                position: fixed; /* 固定定位，悬浮在最上层 */
+                top: 8px;
+                left: 10px;
+                right: 10px;
+                width: calc(100% - 20px);
+                height: 40px;
+                background-color: #fff;
+                color: var(--text-main);
+                padding-left: 40px; /* 为图标留位 */
+                padding-right: 10px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+                z-index: 999;
+                cursor: text;
+                border-radius: 12px;
+            }
+            
+            /* 焦点状态下，图标也要跟着变位置 (通过 CSS 很难完全联动，这里保持输入框左侧有留白即可，视觉上像是图标在左侧) */
+
+            /* 3. 侧边栏适配 */
+            .sidebar-wrapper {
+                position: absolute; top: 0; left: 0; height: 100%;
+                box-shadow: 2px 0 20px rgba(0,0,0,0.1);
+                transform: translateX(-100%); width: 260px;
+            }
             .sidebar-hidden { width: 260px; transform: translateX(-100%); }
-            /* 激活时滑入 */
             .sidebar-wrapper.visible { transform: translateX(0); }
             
-            /* 遮罩层 (侧边栏打开时背景变暗) */
             .sidebar-overlay {
                 position: absolute; top: 0; left: 0; right: 0; bottom: 0;
                 background: rgba(0,0,0,0.3); z-index: 80; display: none;
             }
             .sidebar-overlay.active { display: block; }
 
-            /* 3. 内容区域适配 */
+            /* 4. 内容与网格适配 */
             .main-content { padding: 20px 15px; }
-            .page-title { font-size: 24px; }
-            .page-header-text { margin-bottom: 25px; }
-
-            /* 4. Network Map 适配 */
             .dashboard-header { flex-direction: column; gap: 15px; margin-bottom: 30px; width: 100%; }
             .stat-card { width: 100%; }
-
-            /* 拓扑图垂直堆叠 */
             .router-node { width: 100%; margin-bottom: 40px; }
-            /* 连接线缩短 */
             .router-node::after { height: 42px; bottom: -42px; }
-
             .clients-grid { flex-direction: column; align-items: center; gap: 20px; }
-            /* 手机端去除横向连接线，改为垂直贯穿线 */
             .clients-grid::before { 
                 width: 2px; height: 100%; top: -42px; left: 50%; transform: translateX(-50%); 
                 max-width: none; background: #E5E5EA; z-index: 0;
             }
-            
             .client-card { width: 100%; margin-bottom: 0; }
-            /* 调整连接线位置 */
             .client-card::before { height: 20px; top: -20px; }
-            /* 最后一个卡片不需要向下的线? (这里实际上是背景线贯穿，不用特意处理) */
-
-            /* 5. 配置页适配 */
             .config-view { padding: 20px; }
             .setting-row { flex-direction: column; align-items: flex-start; gap: 10px; }
             .setting-row input[type="text"] { width: 100% !important; }
@@ -389,7 +414,7 @@
     </div>
 
     <script>
-        // === 数据定义: 根据用户需求完全重写 ===
+        // === 数据定义 ===
         const NAV_DATA = {
             "HomeShield": {
                 iconClass: 'fas fa-shield-alt icon-top-orange',
@@ -401,19 +426,12 @@
             "Advanced": {
                 iconClass: 'fas fa-sliders-h icon-top-red',
                 children: {
-                    // L2: Access Control
                     "Access Control": { type: 'leaf' },
-                    // L2: EasyMesh
                     "EasyMesh": { type: 'leaf' },
-                    // L2: QoS
                     "QoS": { type: 'leaf' },
-                    // L2: VPN
                     "VPN": { type: 'leaf' },
-                    // L2: ECO Mode
                     "ECO Mode": { type: 'leaf' },
-                    // L2: TP-Link ID
                     "TP-Link ID": { type: 'leaf' },
-                    // L2: LAN Settings (Has L3)
                     "LAN Settings": { 
                         type: 'parent', 
                         children: { 
@@ -423,7 +441,6 @@
                             "IPTV/VLAN": { type: 'leaf' }
                         } 
                     },
-                    // L2: WAN Settings (Has L3)
                     "WAN Settings": { 
                         type: 'parent', 
                         children: { 
@@ -433,12 +450,10 @@
                             "Port Triggering": { type: 'leaf' },
                             "UPnP": { type: 'leaf' },
                             "DMZ": { type: 'leaf' },
-                            "NAT / Port Negotiation": { type: 'leaf' } // Advanced(NAT/Internet Port Negotiation)
+                            "NAT / Port Negotiation": { type: 'leaf' }
                         } 
                     },
-                    // L2: WPS
                     "WPS": { type: 'leaf' },
-                    // L2: Security Utilities (Has L3)
                     "Security Utilities": { 
                         type: 'parent', 
                         children: { 
@@ -449,7 +464,6 @@
                             "Device Isolation": { type: 'leaf' }
                         } 
                     },
-                    // L2: System (Has L3)
                     "System": { 
                         type: 'parent', 
                         children: { 
@@ -486,30 +500,22 @@
             document.querySelectorAll('.nav-l1-top').forEach(e => e.classList.remove('active'));
             el.classList.add('active');
             
-            // 确保点击时该项目滚动到可视区域 (针对手机端)
             el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
             const sidebar = document.getElementById('sidebar-wrapper');
             const overlay = document.getElementById('sidebar-overlay');
             
             if (type === 'parent') {
-                // 桌面端逻辑
                 if (window.innerWidth > 768) {
                     sidebar.classList.remove('sidebar-hidden');
                 } else {
-                    // 手机端逻辑：滑出
                     sidebar.classList.add('visible');
                     sidebar.classList.remove('sidebar-hidden');
                     overlay.classList.add('active');
                 }
-
                 renderSidebar(title);
-                
-                // 默认选中第一个
                 const firstL2Key = Object.keys(NAV_DATA[title].children)[0];
-                // 如果第一个是leaf，可以考虑高亮，暂不自动跳转内容
                 document.querySelectorAll('#sidebar-nav .nav-l2-item').forEach(e => e.classList.remove('active'));
-                
             } else {
                 sidebar.classList.add('sidebar-hidden');
                 sidebar.classList.remove('visible');
@@ -518,7 +524,6 @@
             }
         }
 
-        // 手机端专用：关闭侧边栏
         function closeSidebar() {
             const sidebar = document.getElementById('sidebar-wrapper');
             const overlay = document.getElementById('sidebar-overlay');
@@ -532,7 +537,6 @@
             
             renderContent(title, 'leaf', null);
             
-            // 手机端点击二级菜单后自动收起侧边栏
             if (window.innerWidth <= 768) {
                 closeSidebar();
             }
@@ -540,7 +544,6 @@
 
         function toggleGroupL2(id, el) {
             const container = document.getElementById('group-' + id);
-            // 简单的展开收起逻辑
             if (container.style.display === 'block') {
                 container.style.display = 'none';
                 el.classList.remove('expanded');
@@ -550,14 +553,11 @@
             }
         }
 
-        // ==================== 渲染函数 ====================
-
         function renderSidebar(groupKey) {
             const nav = NAV_DATA[groupKey];
             let html = '';
             for (const l2Key in nav.children) {
                 const l2 = nav.children[l2Key];
-                // 生成唯一ID，去掉空格和特殊字符
                 const safeId = l2Key.replace(/[^a-zA-Z0-9]/g, '');
 
                 if (l2.type === 'parent') {
